@@ -6,13 +6,10 @@ import VideoList from '../VideoSection/VideoList'
 
 
 
-
-
 const Feed = () => {
 
   const { loading, videoData } = useAppContext();
   const { isDarkMode } = useTheme();
-
 
   return (
     <div className={`flex flex-row h-screen ${isDarkMode ? "bg-gray-900 text-gray-300" : "bg-white text-gray-800"}`}>

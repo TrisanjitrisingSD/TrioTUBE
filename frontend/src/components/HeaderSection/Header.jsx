@@ -13,6 +13,8 @@ import { FaBell } from 'react-icons/fa';
 import { RiAccountCircleLine } from 'react-icons/ri';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import useSpeechRecognitions from '../../useContextHook/useSpeechRecognition';
+import { SignIn, useUser,afterSignOutUrl } from '@clerk/clerk-react';
+import { UserButton } from "@clerk/clerk-react";
 
 
 
@@ -25,12 +27,12 @@ const Header = () => {
   const { loading, mobileMenu, setMobileMenu } = useAppContext();
   const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
-   const {listening,startListening,stopListening,browserSupportsSpeechRecognition}=useSpeechRecognitions(setSearchQuery)
+  const { listening, startListening, stopListening, browserSupportsSpeechRecognition } = useSpeechRecognitions(setSearchQuery)
+  const { user } = useUser();
 
 
-
-  if(!browserSupportsSpeechRecognition){
-    return <span>Browser doesnot support Speech Recognition</span> ;
+  if (!browserSupportsSpeechRecognition) {
+    return <span>Browser doesnot support Speech Recognition</span>;
   }
 
 
@@ -53,7 +55,7 @@ const Header = () => {
     setMobileMenu(!mobileMenu)
   }
 
-  return (
+  return user ? (
     <div className={`sticky top-0 z-10 flex flex-row items-center justify-between h-20 shadow-lg px-4 md:px-5 ${isDarkMode ? "bg-gray-900" : "bg-white"} text-${isDarkMode ? "white" : "bg-gray-700"}`}>
 
       {loading && <SpinnerLoader />}
@@ -113,15 +115,15 @@ const Header = () => {
 
 
         <button
-          onClick={()=>{
-            if(listening){
+          onClick={() => {
+            if (listening) {
               stopListening();
-            }else{
+            } else {
               startListening()
             }
           }}
           className={`flex items-center justify-center w-[40px] md:w-[60px]  h-8 md:h-10 rounded-full hover:bg-${isDarkMode ? "gray-700" : "gray-300"} ml-2`}>
-         {listening?<IoMdMicOff className='text-xl' />:<IoMdMic className='text-xl' />}
+          {listening ? <IoMdMicOff className='text-xl' /> : <IoMdMic className='text-xl' />}
         </button>
 
       </div>
@@ -135,20 +137,22 @@ const Header = () => {
           <FaBell className='text-xl' />
         </button>
         <div className='flex space-x-0 md:space-x-2'>
-          <button className={`hidden md:flex items-center justify-center h-10 w-10 rounded-full hover:bg-${isDarkMode ? "gray-700" : "gray-300"}`}>
-            <RiAccountCircleLine className='text-xl' />
-          </button>
-            <button 
+          <UserButton afterSignOutUrl="/" />
+          <button
             onClick={toggleTheme}
             className={`flex items-center justify-center h-10 w-10 rounded-full hover:bg-${isDarkMode ? "gray-700" : "gray-300"}`}>
-              {isDarkMode?(
-                <FiSun className="text-xl text-yellow-300" />
-              ):(
-                  <FiMoon className='text-xl text-gray-800' />
-              )}
+            {isDarkMode ? (
+              <FiSun className="text-xl text-yellow-300" />
+            ) : (
+              <FiMoon className='text-xl text-gray-800' />
+            )}
           </button>
         </div>
       </div>
+    </div>
+  ) : (
+    <div className='flex justify-between items-center h-full'>
+      <SignIn />
     </div>
   )
 }
